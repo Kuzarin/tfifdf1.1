@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: gb_user
+      POSTGRES_PASSWORD: gbsecurity
+    ports:
+      - "55432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: gb_user
+      DB_PASSWORD: gbsecurity
+      DB_NAME: test
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  pgdata: 
