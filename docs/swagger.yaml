@@ -1,0 +1,423 @@
+basePath: /
+definitions:
+  main.CollectionInfo:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  main.DocumentInfo:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  main.WordInfo:
+    properties:
+      idf:
+        type: number
+      tf:
+        type: number
+      word:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a simple TF-IDF web application.
+  title: TF-IDF Web App API
+  version: "1.0"
+paths:
+  /collection/{collection_id}/{document_id}:
+    delete:
+      description: Removes a document from a specific collection.
+      parameters:
+      - description: Collection ID
+        in: path
+        name: collection_id
+        required: true
+        type: integer
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Document removed from collection successfully
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Document not found in collection
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Remove document from collection
+      tags:
+      - collections
+    post:
+      description: Adds a document to a specific collection.
+      parameters:
+      - description: Collection ID
+        in: path
+        name: collection_id
+        required: true
+        type: integer
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Document added to collection successfully
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Collection or document not found
+          schema:
+            type: string
+        "409":
+          description: Document already in collection
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Add document to collection
+      tags:
+      - collections
+  /collections:
+    get:
+      description: Retrieves a list of collections owned by the authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of collections
+          schema:
+            items:
+              $ref: '#/definitions/main.CollectionInfo'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get list of collections
+      tags:
+      - collections
+  /collections/{collection_id}:
+    get:
+      description: Retrieves a list of document IDs within a specific collection.
+      parameters:
+      - description: Collection ID
+        in: path
+        name: collection_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of documents in collection
+          schema:
+            items:
+              $ref: '#/definitions/main.DocumentInfo'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Collection not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get documents in a collection
+      tags:
+      - collections
+  /collections/{collection_id}/statistics:
+    get:
+      description: Retrieves TF-IDF statistics for all documents in a collection.
+      parameters:
+      - description: Collection ID
+        in: path
+        name: collection_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: TF-IDF statistics
+          schema:
+            items:
+              $ref: '#/definitions/main.WordInfo'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Collection not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get collection statistics (TF-IDF)
+      tags:
+      - collections
+  /documents:
+    get:
+      description: Retrieves a list of documents owned by the authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of documents
+          schema:
+            items:
+              $ref: '#/definitions/main.DocumentInfo'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get list of documents
+      tags:
+      - documents
+  /documents/{document_id}:
+    delete:
+      description: Deletes a specific document owned by the authenticated user.
+      parameters:
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Document deleted successfully
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Document not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Delete a document
+      tags:
+      - documents
+    get:
+      description: Retrieves the content of a specific document.
+      parameters:
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: integer
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Document content
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Document not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get document content
+      tags:
+      - documents
+  /documents/{document_id}/huffman:
+    get:
+      description: Retrieves the content of a specific document, encoded using Huffman
+        coding.
+      parameters:
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: integer
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: Huffman encoded document content
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Document not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get Huffman encoded document content
+      tags:
+      - documents
+  /documents/{document_id}/statistics:
+    get:
+      description: Retrieves TF-IDF statistics for a specific document.
+      parameters:
+      - description: Document ID
+        in: path
+        name: document_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: TF-IDF statistics
+          schema:
+            items:
+              $ref: '#/definitions/main.WordInfo'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Document not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Get document statistics (TF-IDF)
+      tags:
+      - documents
+  /user/{user_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a user account and all associated documents and collections.
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted successfully
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Delete user account
+      tags:
+      - users
+    patch:
+      consumes:
+      - application/json
+      description: Updates the password for a specific user.
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      - description: New password
+        in: body
+        name: password
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password updated successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid request body
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Update user password
+      tags:
+      - users
+swagger: "2.0"
